@@ -6,6 +6,7 @@ import { CartItem, CartTotals } from "../types/cart";
 interface CartContextType {
   items: CartItem[];
   isOpen: boolean;
+  isHydrated: boolean;
   openCart: () => void;
   closeCart: () => void;
   toggleCart: () => void;
@@ -24,9 +25,11 @@ interface CartContextType {
 const CartContext = createContext<CartContextType | undefined>(undefined);
 
 const FREE_SHIPPING_THRESHOLD = 75.0;
-const STORAGE_KEY = "lumethique_cart_v2";
+const STORAGE_KEY = "aesthetique_cart_v1";
+const LEGACY_STORAGE_KEY = "lumethique_cart_v2";
+const PROMO_STORAGE_KEY = "aesthetique_promo_v1";
 
-// Clean initial demonstration sample items
+// Default initial showcase sample items only on very first clean visit
 const INITIAL_CART: CartItem[] = [
   {
     id: "calming_serum",
@@ -60,16 +63,24 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   // Hydrate from localStorage on client mount
   useEffect(() => {
     try {
-      const saved = localStorage.getItem(STORAGE_KEY);
-      if (saved) {
+      const saved = localStorage.getItem(STORAGE_KEY) || localStorage.getItem(LEGACY_STORAGE_KEY);
+      if (saved !== null) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
+          // Keep whatever user had in storage (including an empty cart)
           setItems(parsed);
         } else {
           setItems(INITIAL_CART);
         }
       } else {
+        // First ever visit: show initial demonstration cart and persist it
         setItems(INITIAL_CART);
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(INITIAL_CART));
+      }
+
+      const savedPromo = localStorage.getItem(PROMO_STORAGE_KEY);
+      if (savedPromo) {
+        setAppliedPromo(savedPromo);
       }
     } catch {
       setItems(INITIAL_CART);
@@ -87,6 +98,42 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       }
     }
   }, [items, isHydrated]);
+
+  // Save applied promo to localStorage
+  useEffect(() => {
+    if (isHydrated) {
+      try {
+        if (appliedPromo) {
+          localStorage.setItem(PROMO_STORAGE_KEY, appliedPromo);
+        } else {
+          localStorage.removeItem(PROMO_STORAGE_KEY);
+        }
+      } catch (e) {
+        console.error("Failed to save promo to localStorage", e);
+      }
+    }
+  }, [appliedPromo, isHydrated]);
+
+  // Synchronize cart across browser tabs in real-time
+  useEffect(() => {
+    const handleStorageChange = (e: StorageEvent) => {
+      if ((e.key === STORAGE_KEY || e.key === LEGACY_STORAGE_KEY) && e.newValue !== null) {
+        try {
+          const parsed = JSON.parse(e.newValue);
+          if (Array.isArray(parsed)) {
+            setItems(parsed);
+          }
+        } catch {
+          // ignore corrupted cross-tab payload
+        }
+      } else if (e.key === PROMO_STORAGE_KEY) {
+        setAppliedPromo(e.newValue || null);
+      }
+    };
+
+    window.addEventListener("storage", handleStorageChange);
+    return () => window.removeEventListener("storage", handleStorageChange);
+  }, []);
 
   const showToast = (message: string) => {
     setToastMessage(message);
@@ -223,6 +270,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
       value={{
         items,
         isOpen,
+        isHydrated,
         openCart,
         closeCart,
         toggleCart,
