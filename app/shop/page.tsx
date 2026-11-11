@@ -79,7 +79,7 @@ export default function ShopPage() {
                 <Link
                   key={product.id}
                   href={productHref}
-                  className="group flex flex-col cursor-pointer bg-white"
+                  className="group flex flex-col h-full cursor-pointer bg-white"
                 >
                   <div className="relative aspect-[232/265] w-full overflow-hidden">
                     <button
@@ -108,9 +108,9 @@ export default function ShopPage() {
                   </div>
 
                   {/* Divider + label inside the card */}
-                  <div className="mx-2 border-t border-black/10 flex items-center justify-between py-2.5 px-0.5 text-neutral-900">
-                    <span className="text-xs font-normal tracking-tight">{product.name}</span>
-                    <span className="text-xs font-normal">{product.price}</span>
+                  <div className="mx-2 border-t border-black/10 flex-1 flex items-center justify-between gap-2 py-2.5 px-0.5 text-neutral-900">
+                    <span className="text-xs font-normal tracking-tight truncate">{product.name}</span>
+                    <span className="text-xs font-normal shrink-0">{product.price}</span>
                   </div>
                 </Link>
               );

@@ -45,7 +45,7 @@ export default function BestSellers({ data, onAddToCart }: BestSellersProps) {
       <Link
         key={product.id}
         href={productHref}
-        className={`group flex flex-col cursor-pointer ${product.bgClass} ${className}`}
+        className={`group flex flex-col h-full lg:h-auto cursor-pointer ${product.bgClass} ${className}`}
       >
         <div className="relative aspect-[232/265] w-full overflow-hidden">
           <button
@@ -70,9 +70,9 @@ export default function BestSellers({ data, onAddToCart }: BestSellersProps) {
         </div>
 
         {/* Divider + label inside the card */}
-        <div className="mx-2 border-t border-black/10 flex items-center justify-between py-2.5 px-0.5 text-neutral-900">
-          <span className="text-xs font-normal tracking-tight">{product.name}</span>
-          <span className="text-xs font-normal">{product.price}</span>
+        <div className="mx-2 border-t border-black/10 flex-1 flex items-center justify-between gap-2 py-2.5 px-0.5 text-neutral-900">
+          <span className="text-xs font-normal tracking-tight truncate">{product.name}</span>
+          <span className="text-xs font-normal shrink-0">{product.price}</span>
         </div>
       </Link>
     );
@@ -80,7 +80,7 @@ export default function BestSellers({ data, onAddToCart }: BestSellersProps) {
 
   return (
     <section className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14 sm:py-20 lg:py-24">
-      <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-6 lg:gap-y-0 items-end">
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-x-5 gap-y-6 lg:gap-y-0 items-stretch lg:items-end">
         {/* Row 1: heading (cols 3-4, right aligned) */}
         <div className="col-span-2 lg:col-start-3 lg:row-start-1 flex flex-col justify-center text-left lg:text-right lg:self-center order-first lg:order-none">
           <h2 className="text-5xl sm:text-6xl lg:text-7xl font-bold tracking-tight text-neutral-950 leading-[0.95] whitespace-pre-line">

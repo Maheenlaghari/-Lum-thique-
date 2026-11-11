@@ -14,7 +14,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Aesthetique Luxury Skincare",
+  title: "lumthique Luxury Skincare",
   description: "In-depth reviews and curated luxury skincare products",
 };
 
@@ -27,8 +27,12 @@ export default function RootLayout({
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col bg-[#fbfbf9] text-neutral-900 font-sans">
+      <body
+        className="min-h-full flex flex-col bg-[#fbfbf9] text-neutral-900 font-sans"
+        suppressHydrationWarning
+      >
         <ClientProviders>{children}</ClientProviders>
       </body>
     </html>
